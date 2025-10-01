@@ -18,7 +18,7 @@ data_partner <- "22"
 country <- ""
 exclude_partners <- 0
 skip <- 0
-take <- 2220
+take <- 10000 # max allowed by API
 
 # Build request body as a list
 body_list <- list(
