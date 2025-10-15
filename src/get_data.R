@@ -32,6 +32,7 @@ body_list <- list(
 )
 res <- request("https://easin.jrc.ec.europa.eu/apixg2/geo/getoccurrences") %>%
   req_body_json(body_list) %>%
+  req_error() %>%
   req_perform()
 
 # Inspect output
