@@ -30,20 +30,18 @@ body_list <- list(
   lastRetrievedRowNumber = lastRetrievedRowNumber,
   take = take
 )
-res <- request("https://easin.jrc.ec.europa.eu/apixg2/geo/getoccurrences") %>%
-  req_body_json(body_list) %>%
-  req_error() %>%
-  req_perform()
+res <- httr2::request("https://easin.jrc.ec.europa.eu/apixg2/geo/getoccurrences") %>%
+  httr2::req_body_json(body_list) %>%
+  httr2::req_error() %>%
+  httr2::req_perform()
 
 # Inspect output
 httr2::resp_check_status(res)
 
 # Parse JSON response as tibble (httr2 can also handle this)
 occs <- res %>%
-  resp_body_json(simplifyVector = TRUE) %>%
+  httr2::resp_body_json(simplifyVector = TRUE) %>%
   dplyr::as_tibble()
-
-unique(occs$Timestamp)
 
 
 # Save in raw data folder as CSV
