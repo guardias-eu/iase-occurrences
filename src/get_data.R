@@ -1,6 +1,5 @@
-library(httr)
+library(httr2)
 library(glue)
-library(jsonlite)
 library(dplyr)
 
 # Read credentials from environment variables
@@ -14,10 +13,10 @@ if (email == "" || password == "") {
 
 # Your other dynamic values
 species_id <- ""
-data_partner <- "22"
+data_partner <- 22
 country <- ""
-exclude_partners <- 0
-skip <- 0
+exclude_partner <- 0
+lastRetrievedRowNumber <- 0
 take <- 10000 # max allowed by API
 
 # Build request body as a list
@@ -26,32 +25,24 @@ body_list <- list(
   Password = password,
   speciesId = species_id,
   countryCode = country,
-  dataPartners = data_partner,
-  excludePartners = exclude_partners,
-  skip = skip,
+  dataPartner = data_partner,
+  excludePartner = exclude_partner,
+  lastRetrievedRowNumber = lastRetrievedRowNumber,
   take = take
 )
-
-# Convert list to JSON
-body_json <- jsonlite::toJSON(body_list, auto_unbox = TRUE)
-
-cat(body_json)  # just to check
-
-# Send POST request
-res <- httr::POST(
-  url = "https://easin.jrc.ec.europa.eu/apixg2/geo/getoccurrences",
-  body = body_json,
-  encode = "raw",  # since body is already JSON text
-  add_headers("Content-Type" = "application/json")
-)
+res <- httr2::request("https://easin.jrc.ec.europa.eu/apixg2/geo/getoccurrences") %>%
+  httr2::req_body_json(body_list) %>%
+  httr2::req_error() %>%
+  httr2::req_perform()
 
 # Inspect output
-status_code(res)   # e.g., 200 if OK
-content_text <- httr::content(res, as = "text", encoding = "UTF-8")
+httr2::resp_check_status(res)
 
-# Parse JSON response as tibble data.frame
-occs <- jsonlite::fromJSON(content_text, flatten = TRUE) %>%
+# Parse JSON response as tibble (httr2 can also handle this)
+occs <- res %>%
+  httr2::resp_body_json(simplifyVector = TRUE) %>%
   dplyr::as_tibble()
+
 
 # Save in raw data folder as CSV
 readr::write_csv(occs, "./data/raw/iase_occs.csv")
