@@ -26,7 +26,7 @@ body_list <- list(
   speciesId = species_id,
   countryCode = country,
   dataPartner = data_partner,
-  excludePartner = exclude_partners,
+  excludePartner = exclude_partner,
   lastRetrievedRowNumber = lastRetrievedRowNumber,
   take = take
 )
