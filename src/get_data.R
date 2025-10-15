@@ -36,7 +36,7 @@ res <- request("https://easin.jrc.ec.europa.eu/apixg2/geo/getoccurrences") %>%
   req_perform()
 
 # Inspect output
-resp_status(res)
+httr2::resp_check_status(res)
 
 # Parse JSON response as tibble (httr2 can also handle this)
 occs <- res %>%
